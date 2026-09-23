@@ -1,0 +1,92 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xurl}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{caption}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+}
+
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\bfseries}{\thesubsection}{1em}{}
+\setlength{\parskip}{0.4em}
+
+\title{\textbf{\large Tugas \#1: Model Vector Space dan Probabilistik untuk Sistem Temu Balik Informasi}}
+\author{Vicky Mahfudy (25/573019/PPA/07207) \and Muhammad Bagus Zulmi (25/572328/PPA/07191)\\[0.3em]
+\small Program Studi Magister Ilmu Komputer, Semester Ganjil 2026/2027, Universitas Gadjah Mada}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\vspace{-1.5em}
+
+\section{Pendahuluan}
+
+Laporan ini membandingkan performa 6 model \emph{ranked retrieval} pada korpus 14.343 dokumen berita berbahasa Indonesia (\texttt{News.csv}, kolom \texttt{content}): TF, TF-IDF, dan Word2Vec (\emph{TF-IDF weighted}) sebagai model \emph{vector space}; serta Query-Likelihood (QL) tanpa \emph{smoothing}, QL Laplace, dan QL \emph{linear interpolation} ($\lambda=0{,}5$) sebagai model probabilistik. Preprocessing yang diterapkan pada semua model: \emph{lowercasing}, penghapusan tanda baca, tokenisasi, dan penghapusan \emph{stopword} Bahasa Indonesia. Kelima query uji yang sama digunakan pada seluruh model, masing-masing mengambil \emph{top-10} dokumen. Kode dan hasil lengkap tersedia di \url{https://github.com/vickymahfudy/stbi-tugas-1}.
+
+\section{Waktu Komputasi}
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lrrrr}
+        \toprule
+        \textbf{Model} & \textbf{Mean (s)} & \textbf{Std (s)} & \textbf{Min (s)} & \textbf{Max (s)} \\
+        \midrule
+        Word2Vec (TF-IDF weighted) & 0,0046 & 0,0023 & 0,0029 & 0,0086 \\
+        QL (No Smoothing)          & 0,0087 & 0,0029 & 0,0060 & 0,0136 \\
+        TF-IDF                     & 0,0130 & 0,0030 & 0,0101 & 0,0171 \\
+        QL (Laplace)               & 0,0208 & 0,0057 & 0,0148 & 0,0301 \\
+        QL (Linear Interpolation)  & 0,0248 & 0,0049 & 0,0163 & 0,0290 \\
+        TF                         & 0,0624 & 0,0084 & 0,0569 & 0,0771 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Rata-rata waktu komputasi per model (5 query, korpus 14.343 dokumen).}
+\end{table}
+
+Word2Vec paling cepat karena \emph{similarity} dihitung pada ruang vektor berdimensi rendah (100) yang sudah dibangun sebelumnya. QL tanpa \emph{smoothing} juga cepat karena dokumen langsung tereliminasi (skor $-\infty$) begitu satu kata query tidak ditemukan. TF paling lambat karena implementasi \texttt{CountVectorizer} tidak melakukan \emph{precomputation} bobot seperti TF-IDF, membuat \emph{transform} dan \emph{cosine similarity} lebih mahal.
+
+\section{Relevansi Dokumen Terhadap Query}
+
+Sebagai proksi otomatis relevansi digunakan \texttt{term\_overlap\_ratio} (rasio kata query yang muncul literal di dokumen hasil). Rata-ratanya: QL No Smoothing 1,000; QL Linear Interp. 0,931; QL Laplace 0,909; TF 0,781; TF-IDF 0,754; Word2Vec 0,698.
+
+\textbf{Catatan penting:} nilai 1,000 pada QL tanpa \emph{smoothing} bukan tanda relevansi terbaik, melainkan artefak mekanisme kerjanya, dokumen yang tidak memuat seluruh kata query otomatis dieliminasi, sehingga yang lolos filter pasti \emph{overlap} penuh. Ini membuat metrik ini kurang bermakna untuk model tersebut, dan \emph{top-10}-nya seringkali tidak terisi penuh akibat \emph{data sparsity}. Sebaliknya, nilai Word2Vec yang paling rendah bukan berarti paling tidak relevan, melainkan model ini menangkap kemiripan semantik (dokumen relevan meski tidak memuat kata query secara verbatim). Evaluasi relevansi yang valid membutuhkan penilaian manual terhadap isi dokumen, bukan hanya \emph{overlap} kata literal.
+
+\section{Perbandingan Top-10 Antar Model}
+
+\emph{Jaccard similarity} dari himpunan dokumen \emph{top-10} dihitung untuk setiap pasangan model, pada masing-masing dari 5 query. TF dan TF-IDF cukup mirip (Jaccard 0,11--0,54) karena keduanya berbasis pencocokan kata literal. QL tanpa \emph{smoothing} dan QL \emph{linear interpolation} kadang identik (Jaccard 1,00) pada query dengan dokumen relevan literal yang sedikit dan seragam, namun bisa sangat berbeda (mendekati 0) pada query lain. Word2Vec secara konsisten memiliki \emph{overlap} terendah dengan seluruh varian QL (Jaccard 0,00--0,25), mengonfirmasi representasi semantik menangkap relevansi dari sudut pandang berbeda dibanding model literal maupun probabilistik murni.
+
+\section{Kesimpulan}
+
+\begin{itemize}[itemsep=0.2em]
+    \item Tidak ada model yang unggul di semua aspek: Word2Vec paling cepat namun proksi relevansi literalnya terendah; QL tanpa \emph{smoothing} tampak sempurna pada proksi relevansi hanya karena mekanisme eliminasinya, bukan kualitas retrieval yang sesungguhnya.
+    \item TF-IDF menawarkan keseimbangan yang baik: lebih cepat dari TF, tetap berbasis pencocokan literal yang mudah diinterpretasi.
+    \item \emph{Smoothing} pada QL (Laplace maupun \emph{linear interpolation}) mengatasi eliminasi keras pada QL tanpa \emph{smoothing}, membuat \emph{top-10} lebih konsisten terisi penuh dan toleran terhadap variasi kata.
+    \item Proksi relevansi berbasis \emph{overlap} literal memiliki keterbatasan nyata untuk model semantik dan model dengan eliminasi ketat; evaluasi manual tetap diperlukan untuk klaim relevansi yang valid.
+\end{itemize}
+
+\section{Keterbatasan dan Rencana Lanjutan}
+
+\begin{itemize}[itemsep=0.2em]
+    \item Word2Vec masih dilatih \emph{from-scratch} dari korpus, belum menggunakan model \emph{pretrained} Bahasa Indonesia seperti diharapkan pada spesifikasi tugas.
+    \item Task 4 (\emph{enhancement} dengan \emph{stemming} Sastrawi) belum tuntas dieksekusi pada seluruh korpus karena \emph{stemming} murni Python berjalan lambat untuk \emph{vocabulary} berukuran besar; sedang dipertimbangkan pendekatan \emph{caching} hasil \emph{stemming} ke \emph{disk}.
+    \item Evaluasi relevansi manual belum dilakukan secara sistematis; kolom \texttt{relevan\_manual} pada \emph{file} \texttt{hasil\_re\-trieval.csv} disediakan untuk pekerjaan ini.
+\end{itemize}
+
+\end{document}
