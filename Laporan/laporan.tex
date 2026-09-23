@@ -25,9 +25,8 @@
 \titleformat{\subsection}{\normalfont\bfseries}{\thesubsection}{1em}{}
 \setlength{\parskip}{0.4em}
 
-\title{\textbf{\large Tugas \#1: Model Vector Space dan Probabilistik untuk Sistem Temu Balik Informasi}}
-\author{Vicky Mahfudy (25/573019/PPA/07207) \and Muhammad Bagus Zulmi (25/572328/PPA/07191)\\[0.3em]
-\small Program Studi Magister Ilmu Komputer, Semester Ganjil 2026/2027, Universitas Gadjah Mada}
+\title{\textbf{\large Information Retrieval Models — Vector Space and Probabilistic Approaches}}
+\author{Muhammad Bagus Zulmi (25/572328/PPA/07191) \and Vicky Mahfudy (25/573019/PPA/07207)\\[0.3em]}
 \date{}
 
 \begin{document}
@@ -64,13 +63,62 @@ Word2Vec paling cepat karena \emph{similarity} dihitung pada ruang vektor berdim
 
 \section{Relevansi Dokumen Terhadap Query}
 
-Sebagai proksi otomatis relevansi digunakan \texttt{term\_overlap\_ratio} (rasio kata query yang muncul literal di dokumen hasil). Rata-ratanya: QL No Smoothing 1,000; QL Linear Interp. 0,931; QL Laplace 0,909; TF 0,781; TF-IDF 0,754; Word2Vec 0,698.
+Sebagai proksi otomatis relevansi digunakan \texttt{term\_overlap\_ratio} (rasio kata query yang muncul literal di dokumen hasil), dirangkum pada Tabel~\ref{tab:relevansi}.
 
-\textbf{Catatan penting:} nilai 1,000 pada QL tanpa \emph{smoothing} bukan tanda relevansi terbaik, melainkan artefak mekanisme kerjanya, dokumen yang tidak memuat seluruh kata query otomatis dieliminasi, sehingga yang lolos filter pasti \emph{overlap} penuh. Ini membuat metrik ini kurang bermakna untuk model tersebut, dan \emph{top-10}-nya seringkali tidak terisi penuh akibat \emph{data sparsity}. Sebaliknya, nilai Word2Vec yang paling rendah bukan berarti paling tidak relevan, melainkan model ini menangkap kemiripan semantik (dokumen relevan meski tidak memuat kata query secara verbatim). Evaluasi relevansi yang valid membutuhkan penilaian manual terhadap isi dokumen, bukan hanya \emph{overlap} kata literal.
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lrr}
+        \toprule
+        \textbf{Model} & \textbf{Mean} & \textbf{Std} \\
+        \midrule
+        QL (No Smoothing)          & 1,000 & 0,000 \\
+        QL (Linear Interpolation)  & 0,931 & 0,094 \\
+        QL (Laplace)               & 0,909 & 0,113 \\
+        TF                         & 0,781 & 0,190 \\
+        TF-IDF                     & 0,754 & 0,203 \\
+        Word2Vec (TF-IDF weighted) & 0,698 & 0,220 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Rata-rata proksi relevansi (\texttt{term\_overlap\_ratio}) per model.}
+    \label{tab:relevansi}
+\end{table}
+
+\textbf{Catatan penting:} nilai 1,000 pada QL tanpa \emph{smoothing} bukan tanda relevansi terbaik, melainkan artefak mekanisme kerjanya: dokumen yang tidak memuat seluruh kata query otomatis dieliminasi, sehingga yang lolos filter pasti \emph{overlap} penuh, dan \emph{top-10}-nya seringkali tidak terisi penuh akibat \emph{data sparsity}. Sebaliknya, nilai Word2Vec yang paling rendah menandakan model ini menangkap kemiripan semantik, bukan berarti paling tidak relevan. Evaluasi relevansi yang valid membutuhkan penilaian manual terhadap isi dokumen, bukan hanya \emph{overlap} kata literal.
 
 \section{Perbandingan Top-10 Antar Model}
 
-\emph{Jaccard similarity} dari himpunan dokumen \emph{top-10} dihitung untuk setiap pasangan model, pada masing-masing dari 5 query. TF dan TF-IDF cukup mirip (Jaccard 0,11--0,54) karena keduanya berbasis pencocokan kata literal. QL tanpa \emph{smoothing} dan QL \emph{linear interpolation} kadang identik (Jaccard 1,00) pada query dengan dokumen relevan literal yang sedikit dan seragam, namun bisa sangat berbeda (mendekati 0) pada query lain. Word2Vec secara konsisten memiliki \emph{overlap} terendah dengan seluruh varian QL (Jaccard 0,00--0,25), mengonfirmasi representasi semantik menangkap relevansi dari sudut pandang berbeda dibanding model literal maupun probabilistik murni.
+\emph{Jaccard similarity} dari himpunan dokumen \emph{top-10} dihitung untuk setiap pasangan model pada masing-masing dari 5 query, lalu dirata-ratakan (Tabel~\ref{tab:jaccard}).
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lr}
+        \toprule
+        \textbf{Pasangan Model} & \textbf{Jaccard (rata-rata)} \\
+        \midrule
+        QL No Smoothing vs QL Linear Interp. & 0,579 \\
+        TF vs QL Linear Interp.              & 0,271 \\
+        TF vs TF-IDF                         & 0,251 \\
+        TF-IDF vs QL Linear Interp.          & 0,247 \\
+        TF vs Word2Vec                       & 0,209 \\
+        QL No Smoothing vs QL Laplace        & 0,197 \\
+        TF vs QL No Smoothing                & 0,172 \\
+        QL Laplace vs QL Linear Interp.      & 0,168 \\
+        TF-IDF vs Word2Vec                   & 0,161 \\
+        TF-IDF vs QL No Smoothing            & 0,154 \\
+        TF vs QL Laplace                     & 0,153 \\
+        TF-IDF vs QL Laplace                 & 0,153 \\
+        Word2Vec vs QL Linear Interp.         & 0,133 \\
+        Word2Vec vs QL No Smoothing          & 0,098 \\
+        Word2Vec vs QL Laplace               & 0,093 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Rata-rata \emph{Jaccard similarity} top-10 antar seluruh pasangan model (5 query).}
+    \label{tab:jaccard}
+\end{table}
+
+QL tanpa \emph{smoothing} dan QL \emph{linear interpolation} paling mirip (Jaccard 0,579), wajar karena keduanya berbasis probabilitas kata yang sama sebelum \emph{smoothing} diterapkan. Word2Vec konsisten memiliki \emph{overlap} terendah dengan seluruh varian QL (0,09--0,13), mengonfirmasi representasi semantik menangkap relevansi dari sudut pandang berbeda dibanding model probabilistik berbasis kata literal.
 
 \section{Kesimpulan}
 
