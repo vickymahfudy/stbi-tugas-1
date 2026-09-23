@@ -84,7 +84,7 @@ Sebagai proksi otomatis relevansi digunakan \texttt{term\_overlap\_ratio} (rasio
     \label{tab:relevansi}
 \end{table}
 
-\textbf{Catatan penting:} nilai 1,000 pada QL tanpa \emph{smoothing} bukan tanda relevansi terbaik, melainkan artefak mekanisme kerjanya: dokumen yang tidak memuat seluruh kata query otomatis dieliminasi, sehingga yang lolos filter pasti \emph{overlap} penuh, dan \emph{top-10}-nya seringkali tidak terisi penuh akibat \emph{data sparsity}. Sebaliknya, nilai Word2Vec yang paling rendah menandakan model ini menangkap kemiripan semantik, bukan berarti paling tidak relevan. Evaluasi relevansi yang valid membutuhkan penilaian manual terhadap isi dokumen, bukan hanya \emph{overlap} kata literal.
+Nilai 1,000 pada QL tanpa \emph{smoothing} bukan tanda relevansi terbaik, melainkan artefak mekanisme kerjanya: dokumen yang tidak memuat seluruh kata query otomatis dieliminasi, sehingga yang lolos filter pasti \emph{overlap} penuh, dan \emph{top-10}-nya seringkali tidak terisi penuh akibat \emph{data sparsity}. Sebaliknya, nilai Word2Vec yang paling rendah menandakan model ini menangkap kemiripan semantik, bukan berarti paling tidak relevan. Evaluasi relevansi yang valid membutuhkan penilaian manual terhadap isi dokumen, bukan hanya \emph{overlap} kata literal.
 
 \section{Perbandingan Top-10 Antar Model}
 
@@ -120,21 +120,32 @@ Sebagai proksi otomatis relevansi digunakan \texttt{term\_overlap\_ratio} (rasio
 
 QL tanpa \emph{smoothing} dan QL \emph{linear interpolation} paling mirip (Jaccard 0,579), wajar karena keduanya berbasis probabilitas kata yang sama sebelum \emph{smoothing} diterapkan. Word2Vec konsisten memiliki \emph{overlap} terendah dengan seluruh varian QL (0,09--0,13), mengonfirmasi representasi semantik menangkap relevansi dari sudut pandang berbeda dibanding model probabilistik berbasis kata literal.
 
-\section{Kesimpulan}
+\section{Efek Smoothing dan Normalisasi}
 
-\begin{itemize}[itemsep=0.2em]
-    \item Tidak ada model yang unggul di semua aspek: Word2Vec paling cepat namun proksi relevansi literalnya terendah; QL tanpa \emph{smoothing} tampak sempurna pada proksi relevansi hanya karena mekanisme eliminasinya, bukan kualitas retrieval yang sesungguhnya.
-    \item TF-IDF menawarkan keseimbangan yang baik: lebih cepat dari TF, tetap berbasis pencocokan literal yang mudah diinterpretasi.
-    \item \emph{Smoothing} pada QL (Laplace maupun \emph{linear interpolation}) mengatasi eliminasi keras pada QL tanpa \emph{smoothing}, membuat \emph{top-10} lebih konsisten terisi penuh dan toleran terhadap variasi kata.
-    \item Proksi relevansi berbasis \emph{overlap} literal memiliki keterbatasan nyata untuk model semantik dan model dengan eliminasi ketat; evaluasi manual tetap diperlukan untuk klaim relevansi yang valid.
-\end{itemize}
+\subsection{Efek Smoothing pada Model QL}
 
-\section{Keterbatasan dan Rencana Lanjutan}
+Tabel~\ref{tab:smoothing} menunjukkan rata-rata jumlah dokumen yang berhasil dikembalikan (dari target \emph{top-10}) oleh masing-masing varian QL, dirata-ratakan atas 5 query.
 
-\begin{itemize}[itemsep=0.2em]
-    \item Word2Vec masih dilatih \emph{from-scratch} dari korpus, belum menggunakan model \emph{pretrained} Bahasa Indonesia seperti diharapkan pada spesifikasi tugas.
-    \item Task 4 (\emph{enhancement} dengan \emph{stemming} Sastrawi) belum tuntas dieksekusi pada seluruh korpus karena \emph{stemming} murni Python berjalan lambat untuk \emph{vocabulary} berukuran besar; sedang dipertimbangkan pendekatan \emph{caching} hasil \emph{stemming} ke \emph{disk}.
-    \item Evaluasi relevansi manual belum dilakukan secara sistematis; kolom \texttt{relevan\_manual} pada \emph{file} \texttt{hasil\_re\-trieval.csv} disediakan untuk pekerjaan ini.
-\end{itemize}
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lrrr}
+        \toprule
+        \textbf{Varian QL} & \textbf{Rata-rata Hasil} & \textbf{Min} & \textbf{Max} \\
+        \midrule
+        Tanpa Smoothing      & 8,0  & 4  & 10 \\
+        Laplace              & 10,0 & 10 & 10 \\
+        Linear Interpolation & 10,0 & 10 & 10 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Rata-rata jumlah dokumen hasil (dari target top-10) per varian QL (5 query).}
+    \label{tab:smoothing}
+\end{table}
+
+QL tanpa \emph{smoothing} pada 2 dari 5 query hanya mengembalikan sebagian dokumen (bahkan hingga 4 dari 10) karena mekanismenya mengeliminasi total dokumen yang tidak memuat \emph{seluruh} kata query (skor $-\infty$). \emph{Smoothing}, baik Laplace maupun \emph{linear interpolation}, menghilangkan masalah ini sepenuhnya: probabilitas kata yang tidak ada di dokumen tidak lagi nol, sehingga \emph{top-10} selalu terisi penuh pada seluruh query. Sebagai konsekuensinya, seperti terlihat pada Tabel~\ref{tab:relevansi}, proksi relevansi rata-rata sedikit menurun setelah \emph{smoothing} (1,000 $\rightarrow$ 0,909 untuk Laplace, 0,931 untuk \emph{linear interpolation}), karena dokumen yang dulunya tereliminasi (dan pasti \emph{overlap} penuh bila lolos) kini ikut masuk peringkat meski \emph{overlap} kata-nya tidak lengkap. \emph{Trade-off} ini wajar: \emph{smoothing} menukar sedikit presisi literal demi \emph{recall} yang jauh lebih baik.
+
+\subsection{Efek Normalisasi (Stemming, Stopword Removal, Lowercasing)}
+
+Seluruh model pada laporan ini sudah menerapkan \emph{lowercasing} dan penghapusan \emph{stopword} Bahasa Indonesia sebagai \emph{preprocessing} dasar (Bagian~1). Kami mencoba menambahkan langkah \emph{stemming} (Sastrawi) di atas model TF-IDF sebagai \emph{enhancement} lanjutan, namun proses \emph{stemming} pada \emph{vocabulary} unik dari 14.343 dokumen berjalan lebih dari 15 menit tanpa selesai (Sastrawi murni Python, lambat secara \emph{inherent} per kata) sehingga dihentikan sebelum menghasilkan data. Akibatnya, efek \emph{stemming} terhadap performa retrieval belum dapat dianalisis secara empiris pada laporan ini; evaluasi ini menjadi pekerjaan lanjutan, dengan kandidat solusi berupa \emph{caching} hasil \emph{stemming} ke \emph{disk} atau membatasi lingkup \emph{stemming} pada subset korpus yang lebih kecil.
 
 \end{document}
