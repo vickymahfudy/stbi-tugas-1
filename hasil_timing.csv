@@ -1,31 +1,31 @@
 query,model,time_sec,n_results
-ppkm darurat warga negara asing dilarang masuk,TF,0.067864084005123,10
-ppkm darurat warga negara asing dilarang masuk,TF-IDF,0.01611291700100992,10
-ppkm darurat warga negara asing dilarang masuk,Word2Vec (TF-IDF weighted),0.00410550000378862,10
-ppkm darurat warga negara asing dilarang masuk,QL (No Smoothing),0.010686250010621734,4
-ppkm darurat warga negara asing dilarang masuk,QL (Laplace),0.018793209004797973,10
-ppkm darurat warga negara asing dilarang masuk,QL (Linear Interpolation),0.023467750012059696,10
-olimpiade tokyo bulu tangkis indonesia medali,TF,0.05337179200432729,10
-olimpiade tokyo bulu tangkis indonesia medali,TF-IDF,0.00995629100361839,10
-olimpiade tokyo bulu tangkis indonesia medali,Word2Vec (TF-IDF weighted),0.002851166995242238,10
-olimpiade tokyo bulu tangkis indonesia medali,QL (No Smoothing),0.005567832995438948,10
-olimpiade tokyo bulu tangkis indonesia medali,QL (Laplace),0.01634441599890124,10
-olimpiade tokyo bulu tangkis indonesia medali,QL (Linear Interpolation),0.02043804198910948,10
-covid 19 isolasi mandiri protokol kesehatan,TF,0.05291062498872634,10
-covid 19 isolasi mandiri protokol kesehatan,TF-IDF,0.009570207999786362,10
-covid 19 isolasi mandiri protokol kesehatan,Word2Vec (TF-IDF weighted),0.0028051669942215085,10
-covid 19 isolasi mandiri protokol kesehatan,QL (No Smoothing),0.006448582993471064,6
-covid 19 isolasi mandiri protokol kesehatan,QL (Laplace),0.016617083994788118,10
-covid 19 isolasi mandiri protokol kesehatan,QL (Linear Interpolation),0.020360042006359436,10
-bantuan sembako warga terdampak pandemi,TF,0.05282837500271853,10
-bantuan sembako warga terdampak pandemi,TF-IDF,0.009860457998001948,10
-bantuan sembako warga terdampak pandemi,Word2Vec (TF-IDF weighted),0.0029186669999035075,10
-bantuan sembako warga terdampak pandemi,QL (No Smoothing),0.005847332999110222,10
-bantuan sembako warga terdampak pandemi,QL (Laplace),0.01510479200806003,10
-bantuan sembako warga terdampak pandemi,QL (Linear Interpolation),0.01783070800593123,10
-polisi korban tewas pembunuhan,TF,0.053829541997401975,10
-polisi korban tewas pembunuhan,TF-IDF,0.009709958001621999,10
-polisi korban tewas pembunuhan,Word2Vec (TF-IDF weighted),0.0028078329924028367,10
-polisi korban tewas pembunuhan,QL (No Smoothing),0.006735707996995188,10
-polisi korban tewas pembunuhan,QL (Laplace),0.013045250001596287,10
-polisi korban tewas pembunuhan,QL (Linear Interpolation),0.015377749994513579,10
+ppkm darurat warga negara asing dilarang masuk,TF,0.0770957909990102,10
+ppkm darurat warga negara asing dilarang masuk,TF-IDF,0.015247250004904345,10
+ppkm darurat warga negara asing dilarang masuk,Word2Vec (TF-IDF weighted),0.008586916999774985,10
+ppkm darurat warga negara asing dilarang masuk,QL (No Smoothing),0.013611375004984438,4
+ppkm darurat warga negara asing dilarang masuk,QL (Laplace),0.020869125000899658,10
+ppkm darurat warga negara asing dilarang masuk,QL (Linear Interpolation),0.026033166999695823,10
+olimpiade tokyo bulu tangkis indonesia medali,TF,0.05690616699575912,10
+olimpiade tokyo bulu tangkis indonesia medali,TF-IDF,0.012023791001411155,10
+olimpiade tokyo bulu tangkis indonesia medali,Word2Vec (TF-IDF weighted),0.003997374995378777,10
+olimpiade tokyo bulu tangkis indonesia medali,QL (No Smoothing),0.005997375003062189,10
+olimpiade tokyo bulu tangkis indonesia medali,QL (Laplace),0.017917125005624257,10
+olimpiade tokyo bulu tangkis indonesia medali,QL (Linear Interpolation),0.028967249993002042,10
+covid 19 isolasi mandiri protokol kesehatan,TF,0.05974091700045392,10
+covid 19 isolasi mandiri protokol kesehatan,TF-IDF,0.010637500003213063,10
+covid 19 isolasi mandiri protokol kesehatan,Word2Vec (TF-IDF weighted),0.003230125003028661,10
+covid 19 isolasi mandiri protokol kesehatan,QL (No Smoothing),0.007744582995655946,6
+covid 19 isolasi mandiri protokol kesehatan,QL (Laplace),0.020172917007585056,10
+covid 19 isolasi mandiri protokol kesehatan,QL (Linear Interpolation),0.02649175000260584,10
+bantuan sembako warga terdampak pandemi,TF,0.057195000001229346,10
+bantuan sembako warga terdampak pandemi,TF-IDF,0.01711533300112933,10
+bantuan sembako warga terdampak pandemi,Word2Vec (TF-IDF weighted),0.004115915988222696,10
+bantuan sembako warga terdampak pandemi,QL (No Smoothing),0.008729124994715676,10
+bantuan sembako warga terdampak pandemi,QL (Laplace),0.030149291997076944,10
+bantuan sembako warga terdampak pandemi,QL (Linear Interpolation),0.026096541012520902,10
+polisi korban tewas pembunuhan,TF,0.06102658300369512,10
+polisi korban tewas pembunuhan,TF-IDF,0.010128084002644755,10
+polisi korban tewas pembunuhan,Word2Vec (TF-IDF weighted),0.002877582999644801,10
+polisi korban tewas pembunuhan,QL (No Smoothing),0.007216624988359399,10
+polisi korban tewas pembunuhan,QL (Laplace),0.014803957994445227,10
+polisi korban tewas pembunuhan,QL (Linear Interpolation),0.01630375000240747,10
