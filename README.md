@@ -21,13 +21,6 @@ Membandingkan performa model ranked retrieval pada dataset berita Indonesia: TF,
    - Add-one (Laplace) smoothing
    - Linear interpolation (Jelinek-Mercer)
 
-## Status
-
-- Task 1–3 (data prep, model, testing 5 query x 6 model, timing, perbandingan top-10): selesai.
-- Task 4 (enhancement dengan stemming): belum selesai — proses stemming Sastrawi pada seluruh vocabulary korpus (14k+ dokumen) berjalan lambat, sedang dicari pendekatan yang lebih efisien.
-- Word2Vec pretrained (sesuai brief): belum diterapkan, saat ini masih dilatih from-scratch dari korpus.
-- Laporan tertulis: belum dibuat.
-
 ## Cara Menjalankan
 
 ```bash
